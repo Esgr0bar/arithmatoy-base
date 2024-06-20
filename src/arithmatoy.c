@@ -51,6 +51,7 @@ void arithmatoy_free(char *number) { free(number); }
 */
 char *arithmatoy_add(unsigned int base, const char *lhs, const char *rhs) {
     if (VERBOSE) {
+        fprintf(stderr, "add %u %s %s\n", base, lhs, rhs);
         fprintf(stderr, "add: entering function\n");
     }
 
@@ -74,7 +75,13 @@ char *arithmatoy_add(unsigned int base, const char *lhs, const char *rhs) {
         int sum = lhs_digit + rhs_digit + carry;
         carry = sum / base;
         sum %= base;
+        if (VERBOSE) {
+            fprintf(stderr, "add: digit %c digit %c carry %d\n", to_digit(lhs_digit), to_digit(rhs_digit), carry);
+        }
         result[index++] = to_digit(sum);
+        if (VERBOSE) {
+            fprintf(stderr, "add: result: digit %c carry %d\n", result[index - 1], carry);
+        }
     }
 
     result[index] = '\0';
@@ -95,6 +102,10 @@ char *arithmatoy_add(unsigned int base, const char *lhs, const char *rhs) {
     It handles digit-by-digit subtraction and manages borrows. If the result would be negative, it returns NULL.
 */
 char *arithmatoy_sub(unsigned int base, const char *lhs, const char *rhs) {
+    if (VERBOSE) {
+        fprintf(stderr, "sub %u %s %s\n", base, lhs, rhs);
+        fprintf(stderr, "sub: entering function\n");
+    }
     if (lhs == NULL || rhs == NULL || base >= ALL_DIGIT_COUNT) {
         return NULL;
     }
@@ -140,7 +151,13 @@ char *arithmatoy_sub(unsigned int base, const char *lhs, const char *rhs) {
         } else {
             borrow = 0;
         }
+        if (VERBOSE) {
+            fprintf(stderr, "add: digit %c digit %c carry %d\n", to_digit(lhs_digit), to_digit(rhs_digit), carry);
+        }
         result[k--] = to_digit(diff);
+        if (VERBOSE) {
+            fprintf(stderr, "add: result: digit %c carry %d\n", result[index - 1], carry);
+        }
         i--;
     }
 
@@ -161,6 +178,10 @@ char *arithmatoy_sub(unsigned int base, const char *lhs, const char *rhs) {
     It handles digit-by-digit multiplication and summation of partial results. The final result is returned as a string.
 */
 char *arithmatoy_mul(unsigned int base, const char *lhs, const char *rhs) {
+    if (VERBOSE) {
+        fprintf(stderr, "mul %u %s %s\n", base, lhs, rhs);
+        fprintf(stderr, "mul: entering function\n");
+    }
     if (lhs == NULL || rhs == NULL || base >= ALL_DIGIT_COUNT) {
         return NULL;
     }
@@ -217,10 +238,14 @@ char *arithmatoy_mul(unsigned int base, const char *lhs, const char *rhs) {
         if (carry != 0) {
             partial_result[result_len - lhs_len - i - 1] = to_digit(carry);
         }
-
         char *tmp = result;
+        if (VERBOSE) {
+            fprintf(stderr, "add: digit %c digit %c carry %d\n", to_digit(lhs_digit), to_digit(rhs_digit), carry);
+        }
         result = arithmatoy_add(base, result, partial_result);
-
+        if (VERBOSE) {
+            fprintf(stderr, "add: result: digit %c carry %d\n", result[index - 1], carry);
+        }
         if (result == NULL) {
             return NULL;
         }
